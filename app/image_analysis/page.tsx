@@ -182,7 +182,7 @@ export const ImageAnalysis = () => {
               <TabsTrigger value="pass">Image creator</TabsTrigger>
             </TabsList>
             <TabsContent value="account">
-              <Card className="h-full w-145 border border-hidden ">
+              <Card className="h-250 w-145 border border-hidden ">
                 <CardHeader>
                   <CardTitle className="flex justify-between">
                     <div className="flex gap-2 items-center">
@@ -260,7 +260,7 @@ export const ImageAnalysis = () => {
               </Card>
             </TabsContent>
             <TabsContent value="password">
-              <Card className="w-145 h-full border-transparent">
+              <Card className="w-145 h-250 border-transparent">
                 <CardHeader>
                   <CardTitle className="flex justify-between ">
                     <div className="flex gap-2 items-center">
@@ -312,7 +312,7 @@ export const ImageAnalysis = () => {
               </Card>
             </TabsContent>
             <TabsContent value="pass">
-              <Card className="w-145 h-full border-transparent">
+              <Card className="w-145 h-250 border-transparent">
                 <CardHeader>
                   <CardTitle className="flex justify-between ">
                     <div className="flex gap-2 items-center">
@@ -375,7 +375,7 @@ export const ImageAnalysis = () => {
           </Tabs>
         </div>{" "}
       </div>{" "}
-      <div className="flex  justify-end mt-10 w-[750px]">
+      <div className="flex  justify-end  w-[750px] items-end h-250 mr-10 mt-24">
         {!chat && (
           <button
             className="w-11 h-11 bg-black rounded-full justify-center items-center flex "
