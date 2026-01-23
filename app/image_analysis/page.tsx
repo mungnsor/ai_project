@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+
 import { StarIcon } from "../icons/starIcon";
 import { RefreshIcon } from "../icons/refreshIcon";
 import { NoteIcon } from "../icons/noteIcon";
@@ -18,14 +18,15 @@ import { ImageIcon } from "../icons/imageIcon";
 import { TrashIcon } from "../icons/trashIcon";
 import { ChatIcon } from "../icons/chatIcon";
 import { SendIcon } from "lucide-react";
+
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
-export const ImageAnalysis = () => {
+export default function Page() {
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [text, setText] = useState("");
@@ -44,10 +45,12 @@ export const ImageAnalysis = () => {
       window.location.reload();
     }, 600);
   };
+
   const handleRemoveInput = () => {
     setImgUrl(null);
     setFile(null);
   };
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
     if (!uploadedFile) return;
@@ -55,19 +58,22 @@ export const ImageAnalysis = () => {
     setFile(uploadedFile);
     setImgUrl(URL.createObjectURL(uploadedFile));
   };
+
   const handleDetect = async () => {
     if (!file) return;
     setLoading(true);
     setResult([]);
+
     try {
       const formData = new FormData();
       formData.append("image", file);
 
-      const response = await fetch("/api/detect", {
+      const res = await fetch("/api/detect", {
         method: "POST",
         body: formData,
       });
-      const data = await response.json();
+
+      const data = await res.json();
       setResult(data.objects || []);
     } catch (err) {
       console.error(err);
@@ -75,51 +81,46 @@ export const ImageAnalysis = () => {
       setLoading(false);
     }
   };
+
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
     setLoading(true);
     setImageUrl(null);
 
     try {
-      const data = await (
-        await fetch("/apii/detection", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt }),
-        })
-      ).json();
+      const res = await fetch("/apii/detection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
 
-      if (data.error) {
-        console.error(data.error);
-      } else if (data.image) {
-        setImageUrl(data.image);
-      }
+      const data = await res.json();
+
+      if (data.error) console.error(data.error);
+      else if (data.image) setImageUrl(data.image);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
+
   const handleGenreText = async () => {
     if (!text) return;
-
     setLoading(true);
 
     try {
       const res = await fetch("/key/textdetect", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: text }),
       });
-      const data = await res.json();
-      console.log(data, "hehee");
-      setShowText(data.text.candidates[0].content.parts[0].text);
 
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
+
+      setShowText(data?.text?.candidates?.[0]?.content?.parts?.[0]?.text ?? "");
       setResponse(data.text);
     } catch (error) {
       console.error("Error:", error);
@@ -137,13 +138,13 @@ export const ImageAnalysis = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("/chat/detects", {
+      const res = await fetch("/chat/detects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chat: userMessage }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
       if (data.err) {
         setMessages((prev) => [
@@ -156,10 +157,10 @@ export const ImageAnalysis = () => {
           { role: "assistant", content: data.text },
         ]);
       }
-    } catch (err) {
+    } catch (err: any) {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: `Error: ${err}` },
+        { role: "assistant", content: `Error: ${String(err)}` },
       ]);
     } finally {
       setLoading(false);
@@ -171,6 +172,7 @@ export const ImageAnalysis = () => {
       handleSend();
     }
   };
+
   return (
     <div className="flex  w-full h-full justify-end ">
       <div className="w-145 h-222 flex  ">
@@ -411,7 +413,7 @@ export const ImageAnalysis = () => {
                   <div
                     className={`max-w-[80%] rounded-lg px-4 py-2 ${
                       message.role === "user"
-                        ? "bg-blue-600 text-white"
+                        ? "bg-black text-white"
                         : "bg-gray-200 dark:bg-gray-700"
                     }`}
                   >
@@ -446,7 +448,7 @@ export const ImageAnalysis = () => {
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
                 disabled={loading}
-                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:black"
               />
               <button
                 onClick={handleSend}
@@ -461,4 +463,4 @@ export const ImageAnalysis = () => {
       </div>
     </div>
   );
-};
+}
